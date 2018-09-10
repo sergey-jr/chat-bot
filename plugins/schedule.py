@@ -41,7 +41,9 @@ submenu = {
                     "label": "Расписание на вторник"
                 },
                 "color": "default"
-            },
+            }
+        ],
+        [
             {
                 "action": {
                     "type": "text",
@@ -49,9 +51,7 @@ submenu = {
                     "label": "Расписание на среду"
                 },
                 "color": "default"
-            }
-        ],
-        [
+            },
             {
                 "action": {
                     "type": "text",
@@ -59,7 +59,9 @@ submenu = {
                     "label": "Расписание на четверг"
                 },
                 "color": "default"
-            },
+            }
+        ],
+        [
             {
                 "action": {
                     "type": "text",
@@ -77,21 +79,23 @@ submenu = {
                 "color": "default"
             }
         ],
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"9\"}",
-                "label": "Назад"
-            },
-            "color": "primary"
-        }
+        [
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"9\"}",
+                    "label": "Назад"
+                },
+                "color": "primary"
+            }
+        ]
     ]
 }
 
 
 @plugin.on_text("Расписание")
 async def schedule_submenu(message, attachments, env):
-    await env.reply('', keyboard=json.dumps(submenu, ensure_ascii=False))
+    await env.reply('&#13;', keyboard=json.dumps(submenu, ensure_ascii=False))
 
 
 @plugin.on_startswith_text("расписание", "schedule")
