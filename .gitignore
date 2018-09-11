@@ -1,0 +1,21 @@
+# Editors
+## JetBrains
+src/.idea/*
+.idea/*
+## Visual Studio Code
+.vscode/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/*
+*.py[cod]
+*$py.class
+*.log
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# Database
+*.sqlite
+*.sqlite3
