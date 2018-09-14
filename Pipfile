@@ -2,8 +2,6 @@
 
 kutana = "*"
 pytz = "*"
-json = "*"
-calendar = "*"
 
 [requires]
 
