@@ -103,14 +103,13 @@ async def schedule_submenu(message, attachments, env):
     await env.reply('Расписание (меню)', keyboard=json.dumps(submenu, ensure_ascii=False))
 
 
-def readfile(day, group='у-156'):
+def readfile(day, group='у-156', w=0):
     now = datetime.now(tz=pytz.timezone('Europe/Moscow'))
     now.replace(hour=0, minute=0, second=0, microsecond=0)
     if now.month > 8:
         year, next_year = now.year, now.year + 1
     if now.month < 7:
         year, next_year = now.year - 1, now.year
-    w = 0
     for m in range(9, 13):
         c = calendar.monthcalendar(year, m)
         flag = 0
@@ -161,7 +160,13 @@ def readfile(day, group='у-156'):
                 week = 'знаменатель'
             else:
                 week = 'числитель'
-            message = (week, t) if s else "Похоже у тебя выходной"
+            message = (week, t) if s else (week, "Похоже у тебя выходной")
+    except KeyError:
+        if not week % 2:
+            week = 'знаменатель'
+        else:
+            week = 'числитель'
+        message = (week, "Похоже у тебя выходной")
     except Exception as err:
         message = 'error! %s: %s' % (type(err), err)
     return message
@@ -179,5 +184,14 @@ async def schedule(message, attachments, env):
     for i in range(1, 8):
         days["ru"][week_days["ru"][i - 1]] = i
         days["en"][week_days["en"][i - 1]] = i
-    text = "{}:\n{}".format(message.text, readfile(days["ru"][env.body]))
+    day = days["ru"][env.body]
+    if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
+        res = readfile(day)
+        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day-1], res[0], res[1])
+    else:
+        res = readfile(day)
+        text = "{}({}):\n{}".format(message.text, res[0], res[1])
+        # next week
+        res = readfile(day, w=1)
+        text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
     await env.reply(text)
