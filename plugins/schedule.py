@@ -3,9 +3,11 @@ import json
 import os
 
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from kutana import Plugin
+
+import settings
 
 plugin = Plugin(name="Расписание")
 
@@ -103,9 +105,22 @@ async def schedule_submenu(message, attachments, env):
     await env.reply('Расписание (меню)', keyboard=json.dumps(submenu, ensure_ascii=False))
 
 
-def readfile(day, group='у-156', w=0):
-    now = datetime.now(tz=pytz.timezone('Europe/Moscow'))
+def get_subgroups_text(time, subject, room):
+    if "/" not in subject:
+        return " ".join([time, subject, room]) + '\n'
+    else:
+        subject = subject.split(" / ")
+        room = room.split(" / ")
+        return "{} {}({})/{}({})\n".format(time, subject[0], room[0], subject[1], room[1])
+
+
+def readfile(**kwargs):
+    group = kwargs.get('group', 'у-156')
+    w = kwargs.get('w', 0)
+    delta = kwargs.get('delta', 0)
+    now = datetime.now(tz=pytz.timezone('Europe/Moscow')) + timedelta(days=delta)
     now.replace(hour=0, minute=0, second=0, microsecond=0)
+    day = kwargs.get('day', now.weekday() + 1)
     if now.month > 8:
         year, next_year = now.year, now.year + 1
     if now.month < 7:
@@ -117,7 +132,10 @@ def readfile(day, group='у-156', w=0):
             if m > 9 and 0 not in x and c[0] == x:
                 w += 1
             if m == 9:
-                w += 1
+                if 1 in x and settings.first09:
+                    w += 1
+                elif 1 not in x:
+                    w += 1
             if x != c[0] and m > 9:
                 w += 1
             if now.day in x and m == now.month:
@@ -149,13 +167,13 @@ def readfile(day, group='у-156', w=0):
             s = json.loads(s)[str(week_day)]
             t = ''
             for x in s:
-                if isinstance(s[x], dict) and s[x]['subject']:
-                    t += s[x]['time'] + ' ' + s[x]['subject'] + ' ' + s[x]['room'] + '\n'
+                if isinstance(s[x], dict) and s[x]:
+                    t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                 elif isinstance(s[x], list) or isinstance(s[x], tuple):
                     if week % 2 and s[x][0]:
-                        t += s[x][0]['time'] + ' ' + s[x][0]['subject'] + ' ' + s[x][0]['room'] + '\n'
+                        t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                     if s[x][1] and not week % 2:
-                        t += s[x][1]['time'] + ' ' + s[x][1]['subject'] + ' ' + s[x][1]['room'] + '\n'
+                        t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
             if not week % 2:
                 week = 'знаменатель'
             else:
@@ -179,19 +197,21 @@ async def schedule(message, attachments, env):
     week_day = now.weekday() + 1
     week_days = {"ru": ["понедельник", "вторник", "среду", "четверг", "пятницу", "субботу", "воскресенье"],
                  "en": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]}
-    days = {"en": {"today": week_day, "tomorrow": week_day + 1},
-            "ru": {"сегодня": week_day, "завтра": week_day + 1}}
+    days = {"en": {"today": {"day": week_day, "delta": 0},
+                   "tomorrow": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}},
+            "ru": {"сегодня": {"day": week_day, "delta": 0},
+                   "завтра": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}}}
     for i in range(1, 8):
         days["ru"][week_days["ru"][i - 1]] = i
         days["en"][week_days["en"][i - 1]] = i
     day = days["ru"][env.body]
     if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
-        res = readfile(day)
-        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day-1], res[0], res[1])
+        res = readfile(delta=day["delta"])
+        text = "{}({}/{}):\n{}".format(message.text,  week_days['ru'][day["day"] - 1], res[0], res[1])
     else:
-        res = readfile(day)
+        res = readfile(day=day)
         text = "{}({}):\n{}".format(message.text, res[0], res[1])
         # next week
-        res = readfile(day, w=1)
+        res = readfile(day=day, w=1)
         text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
     await env.reply(text)
