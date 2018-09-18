@@ -109,7 +109,7 @@ def get_subgroups_text(time, subject, room):
     if "/" not in subject:
         return " ".join([time, subject, room]) + '\n'
     else:
-        subject = subject.replace(" ", "").split("/")
+        subject = subject.split(" / ")
         room = room.replace(" ", "").split("/")
         return "{} {}({})/{}({})\n".format(time, subject[0], room[0], subject[1], room[1])
 
