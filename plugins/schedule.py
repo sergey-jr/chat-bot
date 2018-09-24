@@ -109,8 +109,8 @@ def get_subgroups_text(time, subject, room):
     if "/" not in subject:
         return " ".join([time, subject, room]) + '\n'
     else:
-        subject = subject.split(" / ")
-        room = room.replace(" ", "").split("/")
+        subject = subject.split("/")
+        room = room.split("/")
         return "{} {}({})/{}({})\n".format(time, subject[0], room[0], subject[1], room[1])
 
 
@@ -207,7 +207,7 @@ async def schedule(message, attachments, env):
     day = days["ru"][env.body]
     if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
         res = readfile(delta=day["delta"])
-        text = "{}({}/{}):\n{}".format(message.text,  week_days['ru'][day["day"] - 1], res[0], res[1])
+        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
     else:
         res = readfile(day=day)
         text = "{}({}):\n{}".format(message.text, res[0], res[1])
