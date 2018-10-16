@@ -204,7 +204,12 @@ async def schedule(message, attachments, env):
     for i in range(1, 8):
         days["ru"][week_days["ru"][i - 1]] = i
         days["en"][week_days["en"][i - 1]] = i
-    day = days["ru"][env.body]
+    if env.body in days['ru'].keys():
+        day = days["ru"][env.body]
+    elif env.body in days['en'].keys():
+        day = days["en"][env.body]
+    else:
+        day = datetime.strptime(env.body, '%d.%m.%Y').weekday() + 1
     if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
         res = readfile(delta=day["delta"])
         text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
