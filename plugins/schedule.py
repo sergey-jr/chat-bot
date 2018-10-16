@@ -119,7 +119,8 @@ def readfile(**kwargs):
     w = kwargs.get('w', 0)
     delta = kwargs.get('delta', 0)
     date = kwargs.get('date', None)
-    now = datetime.now(tz=pytz.timezone('Europe/Moscow')) + timedelta(days=delta) if not date else date
+    timezone = pytz.timezone('Europe/Moscow')
+    now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
     now.replace(hour=0, minute=0, second=0, microsecond=0)
     day = kwargs.get('day', now.weekday() + 1)
     if now.month > 8:
@@ -173,6 +174,7 @@ def readfile(**kwargs):
                         start, end = s[x]['time'].split('-')
                         start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                         end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                        start, end = timezone.localize(start), timezone.localize(end)
                         if start <= now <= end:
                             t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                     else:
@@ -184,6 +186,7 @@ def readfile(**kwargs):
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
                                                                               year=now.year)
                             end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                            start, end = timezone.localize(start), timezone.localize(end)
                             if start <= now <= end:
                                 t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                         else:
@@ -194,6 +197,7 @@ def readfile(**kwargs):
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
                                                                               year=now.year)
                             end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                            start, end = timezone.localize(start), timezone.localize(end)
                             if start <= now <= end:
                                 t += get_subgroups_text(s[x][0]['time'], s[x][1]['subject'], s[x][0]['room'])
                         else:
