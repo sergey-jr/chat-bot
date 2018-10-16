@@ -175,7 +175,7 @@ def readfile(**kwargs):
                         start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                         end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                         start, end = timezone.localize(start), timezone.localize(end)
-                        if start <= now <= end:
+                        if start <= now <= end or start > now:
                             t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                     else:
                         t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
@@ -187,7 +187,7 @@ def readfile(**kwargs):
                                                                               year=now.year)
                             end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                             start, end = timezone.localize(start), timezone.localize(end)
-                            if start <= now <= end:
+                            if start <= now <= end or start > now:
                                 t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                         else:
                             t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
@@ -198,7 +198,7 @@ def readfile(**kwargs):
                                                                               year=now.year)
                             end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                             start, end = timezone.localize(start), timezone.localize(end)
-                            if start <= now <= end:
+                            if start <= now <= end or start > now:
                                 t += get_subgroups_text(s[x][0]['time'], s[x][1]['subject'], s[x][0]['room'])
                         else:
                             t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
