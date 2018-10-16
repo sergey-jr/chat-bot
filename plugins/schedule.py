@@ -118,7 +118,8 @@ def readfile(**kwargs):
     group = kwargs.get('group', 'у-156')
     w = kwargs.get('w', 0)
     delta = kwargs.get('delta', 0)
-    now = datetime.now(tz=pytz.timezone('Europe/Moscow')) + timedelta(days=delta)
+    date = kwargs.get('date', None)
+    now = datetime.now(tz=pytz.timezone('Europe/Moscow')) + timedelta(days=delta) if not date else date
     now.replace(hour=0, minute=0, second=0, microsecond=0)
     day = kwargs.get('day', now.weekday() + 1)
     if now.month > 8:
@@ -223,6 +224,7 @@ async def schedule(message, attachments, env):
         res = readfile(day=day, w=1)
         text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
     else:
-        res = readfile(day=day)
-        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
+        date = datetime.strptime(env.body, '%d.%m.%Y')
+        res = readfile(date=date)
+        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day - 1], res[0], res[1])
     await env.reply(text)
