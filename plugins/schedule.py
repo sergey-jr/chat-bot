@@ -213,10 +213,16 @@ async def schedule(message, attachments, env):
     if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
         res = readfile(delta=day["delta"])
         text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
-    else:
+    elif (env.body in days['ru'].keys() or env.body in days['en'].keys()) and env.body not in ["today",
+                                                                                               "tomorrow",
+                                                                                               "сегодня",
+                                                                                               "завтра"]:
         res = readfile(day=day)
         text = "{}({}):\n{}".format(message.text, res[0], res[1])
         # next week
         res = readfile(day=day, w=1)
         text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
+    else:
+        res = readfile(day=day)
+        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
     await env.reply(text)
