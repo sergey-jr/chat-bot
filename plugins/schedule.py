@@ -117,7 +117,7 @@ def get_subgroups_text(time, subject, room):
 def readfile(**kwargs):
     group = kwargs.get('group', 'у-156')
     w = kwargs.get('w', 0)
-    delta = kwargs.get('delta', 0)
+    delta = kwargs.get('delta', None)
     date = kwargs.get('date', None)
     timezone = pytz.timezone('Europe/Moscow')
     now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
@@ -170,7 +170,7 @@ def readfile(**kwargs):
             t = ''
             for x in s:
                 if isinstance(s[x], dict) and s[x]:
-                    if not delta:
+                    if delta == 0:
                         start, end = s[x]['time'].split('-')
                         start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                         end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
@@ -181,7 +181,7 @@ def readfile(**kwargs):
                         t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                 elif isinstance(s[x], list) or isinstance(s[x], tuple):
                     if week % 2 and s[x][0]:
-                        if not delta:
+                        if delta == 0:
                             start, end = s[x][0]['time'].split('-')
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
                                                                               year=now.year)
@@ -192,7 +192,7 @@ def readfile(**kwargs):
                         else:
                             t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                     if s[x][1] and not week % 2:
-                        if not delta:
+                        if delta == 0:
                             start, end = s[x][1]['time'].split('-')
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
                                                                               year=now.year)
@@ -206,7 +206,7 @@ def readfile(**kwargs):
                 week = 'знаменатель'
             else:
                 week = 'числитель'
-                if not t and not delta:
+                if not t and delta == 0:
                     t = 'Пары на сегодня закончились.'
             message = (week, t) if s else (week, "Похоже у тебя выходной")
     except KeyError:
