@@ -169,16 +169,41 @@ def readfile(**kwargs):
             t = ''
             for x in s:
                 if isinstance(s[x], dict) and s[x]:
-                    t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
+                    if not delta:
+                        start, end = s[x]['time'].split('-')
+                        start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                        end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                        if start <= now <= end:
+                            t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
+                    else:
+                        t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                 elif isinstance(s[x], list) or isinstance(s[x], tuple):
                     if week % 2 and s[x][0]:
-                        t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
+                        if not delta:
+                            start, end = s[x][0]['time'].split('-')
+                            start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
+                                                                              year=now.year)
+                            end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                            if start <= now <= end:
+                                t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
+                        else:
+                            t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                     if s[x][1] and not week % 2:
-                        t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
+                        if not delta:
+                            start, end = s[x][1]['time'].split('-')
+                            start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
+                                                                              year=now.year)
+                            end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
+                            if start <= now <= end:
+                                t += get_subgroups_text(s[x][0]['time'], s[x][1]['subject'], s[x][0]['room'])
+                        else:
+                            t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
             if not week % 2:
                 week = 'знаменатель'
             else:
                 week = 'числитель'
+                if not t and not delta:
+                    t = 'Пары на сегодня закончились.'
             message = (week, t) if s else (week, "Похоже у тебя выходной")
     except KeyError:
         if not week % 2:
