@@ -117,7 +117,7 @@ def get_subgroups_text(time, subject, room):
 def readfile(**kwargs):
     group = kwargs.get('group', 'у-156')
     w = kwargs.get('w', 0)
-    delta = kwargs.get('delta', None)
+    delta = kwargs.get('delta', 0 if kwargs.get('day', None) else None)
     date = kwargs.get('date', None)
     timezone = pytz.timezone('Europe/Moscow')
     now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
