@@ -27,54 +27,14 @@ def get_subgroups_text(time, subject, room):
         return "{} {}({})/{}({})\n".format(time, subject[0], room[0], subject[1], room[1])
 
 
-def readfile(**kwargs):
-    group = kwargs.get('group', 'у-156')
-    w = kwargs.get('w', 0)
-    delta = kwargs.get('delta', 0 if kwargs.get('day', None) else None)
-    date = kwargs.get('date', None)
-    timezone = pytz.timezone('Europe/Moscow')
-    now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
-    now.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = kwargs.get('day', now.weekday() + 1)
-    if now.month > 8:
-        year, next_year = now.year, now.year + 1
-    if now.month < 7:
-        year, next_year = now.year - 1, now.year
-    for m in range(9, 13):
-        c = calendar.monthcalendar(year, m)
-        flag = 0
-        for x in c:
-            if m > 9 and 0 not in x and c[0] == x:
-                w += 1
-            if m == 9:
-                if 1 in x and settings.first09:
-                    w += 1
-                elif 1 not in x:
-                    w += 1
-            if x != c[0] and m > 9:
-                w += 1
-            if now.day in x and m == now.month:
-                flag = 1
-                break
-        if flag:
-            break
-    if now.year == next_year:
-        for m in range(1, 7):
-            c = calendar.monthcalendar(next_year, m)
-            flag = 0
-            for x in c:
-                if 0 not in x and x == c[0]:
-                    w += 1
-                if x != c[0]:
-                    w += 1
-                if now.day in x and m == now.month:
-                    flag = 1
-                    break
-            if flag:
-                break
-    week = w
-    week_day = day
+def read_file(**kwargs):
     try:
+        group = kwargs.get('group', None)
+        week = kwargs.get('week', None)
+        delta = kwargs.get('delta', None)
+        week_day = kwargs.get('weekday', None)
+        timezone = pytz.timezone('Europe/Moscow')
+        now = datetime.now(tz=timezone) + timedelta(days=delta)
         cwd = "{}/{}".format(os.getcwd(), group)
         with open(os.path.join(cwd, "schedule.json"), mode='r', encoding='utf-8') as file:
             s = file.read()
@@ -129,7 +89,58 @@ def readfile(**kwargs):
             week = 'числитель'
         message = (week, "Похоже у тебя выходной")
     except Exception as err:
-        message = 'error! %s: %s' % (type(err), err)
+        message = 'error! %s: %s' % (type(err), err), -1
+    return message
+
+
+def get_schedule(**kwargs):
+    group = kwargs.get('group', 'у-156')
+    w = kwargs.get('w', 0)
+    delta = kwargs.get('delta', 1 if kwargs.get('day', None) else None)
+    date = kwargs.get('date', None)
+    timezone = pytz.timezone('Europe/Moscow')
+    now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
+    now.replace(hour=0, minute=0, second=0, microsecond=0)
+    day = kwargs.get('day', now.weekday() + 1)
+    if now.month > 8:
+        year, next_year = now.year, now.year + 1
+    if now.month < 7:
+        year, next_year = now.year - 1, now.year
+    for m in range(9, 13):
+        c = calendar.monthcalendar(year, m)
+        flag = 0
+        for x in c:
+            if m > 9 and 0 not in x and c[0] == x:
+                w += 1
+            if m == 9:
+                if 1 in x and settings.first09:
+                    w += 1
+                elif 1 not in x:
+                    w += 1
+            if x != c[0] and m > 9:
+                w += 1
+            if now.day in x and m == now.month:
+                flag = 1
+                break
+        if flag:
+            break
+    if now.year == next_year:
+        for m in range(1, 7):
+            c = calendar.monthcalendar(next_year, m)
+            flag = 0
+            for x in c:
+                if 0 not in x and x == c[0]:
+                    w += 1
+                if x != c[0]:
+                    w += 1
+                if now.day in x and m == now.month:
+                    flag = 1
+                    break
+            if flag:
+                break
+    week = w
+    week_day = day
+    message = read_file(group=group, week=week, weekday=week_day, delta=delta)
     return message
 
 
@@ -154,19 +165,19 @@ async def schedule(message, attachments, env):
     else:
         day = datetime.strptime(env.body, '%d.%m.%Y').weekday() + 1
     if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
-        res = readfile(delta=day["delta"])
+        res = get_schedule(delta=day["delta"])
         text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
     elif (env.body in days['ru'].keys() or env.body in days['en'].keys()) and env.body not in ["today",
                                                                                                "tomorrow",
                                                                                                "сегодня",
                                                                                                "завтра"]:
-        res = readfile(day=day)
+        res = get_schedule(day=day)
         text = "{}({}):\n{}".format(message.text, res[0], res[1])
         # next week
-        res = readfile(day=day, w=1)
+        res = get_schedule(day=day, w=1)
         text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
     else:
         date = datetime.strptime(env.body, '%d.%m.%Y')
-        res = readfile(date=date)
+        res = get_schedule(date=date)
         text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day - 1], res[0], res[1])
     await env.reply(text)
