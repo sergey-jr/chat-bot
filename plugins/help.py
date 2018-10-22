@@ -1,7 +1,7 @@
 import json
 
 from kutana import Plugin
-import settings
+import keyboards
 
 plugin = Plugin(name="Помощь")
 
@@ -14,4 +14,4 @@ async def help_me(message, attachments, env):
                 Могу показать расписание на любой день \
                 недели или неделю. \nрасписание на <dd>.<mm>.<yyyy> - \
                 расписание на конкретное число'.format(user['first_name'])
-    await env.reply(text, keyboard=json.dumps(settings.keyboard, ensure_ascii=False))
+    await env.reply(text, keyboard=json.dumps(keyboards.keyboard_main, ensure_ascii=False))
