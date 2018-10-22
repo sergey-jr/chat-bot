@@ -79,8 +79,8 @@ def read_file(**kwargs):
                 week = 'знаменатель'
             else:
                 week = 'числитель'
-                if not t and delta == 0:
-                    t = 'Пары на сегодня закончились.'
+            if not t and delta == 0:
+                t = 'Пары на сегодня закончились.'
             message = (week, t) if s else (week, "Похоже у тебя выходной")
     except KeyError:
         if not week % 2:
