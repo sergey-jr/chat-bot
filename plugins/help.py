@@ -1,7 +1,7 @@
 import json
 
 from kutana import Plugin
-import keyboards
+import keyboards, settings
 
 plugin = Plugin(name="Помощь")
 
