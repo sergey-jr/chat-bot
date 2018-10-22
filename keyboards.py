@@ -1,4 +1,5 @@
 from gettext import gettext as _
+
 schedule_menu = {
     "one_time": False,
     "buttons": [
@@ -103,6 +104,36 @@ keyboard_main = {
                 "type": "text",
                 "payload": "{\"button\": \"2\"}",
                 "label": "Расписание"
+            },
+            "color": "default"
+        }
+    ]]
+}
+
+keyboard_main_admin = {
+    "one_time": False,
+    "buttons": [[
+        {
+            "action": {
+                "type": "text",
+                "payload": "{\"button\": \"1\"}",
+                "label": "Помощь"
+            },
+            "color": "default"
+        },
+        {
+            "action": {
+                "type": "text",
+                "payload": "{\"button\": \"2\"}",
+                "label": "Расписание"
+            },
+            "color": "default"
+        },
+        {
+            "action": {
+                "type": "text",
+                "payload": "{\"button\": \"3\"}",
+                "label": "Админка"
             },
             "color": "default"
         }

@@ -6,7 +6,7 @@ import keyboards
 plugin = Plugin(name="Помощь")
 
 
-@plugin.on_text("помощь", "help", "начать", "start")
+@plugin.on_text("начать", "start")
 async def help_me(message, attachments, env):
     user = await env.request("users.get", user_ids=[message.from_id], name_case="Nom")
     user = user.response[0]
@@ -15,4 +15,7 @@ async def help_me(message, attachments, env):
            'недели или неделю. \nрасписание на <dd>.<mm>.<yyyy> - ' \
            'расписание на конкретное число' \
         .format(user['first_name'])
-    await env.reply(text, keyboard=json.dumps(keyboards.keyboard_main, ensure_ascii=False))
+    if message.from_id in settings.admins:
+        await env.reply(text, keyboard=json.dumps(keyboards.keyboard_main_admin, ensure_ascii=False))
+    else:
+        await env.reply(text, keyboard=json.dumps(keyboards.keyboard_main, ensure_ascii=False))
