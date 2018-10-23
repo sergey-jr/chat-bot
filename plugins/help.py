@@ -3,10 +3,10 @@ import json
 from kutana import Plugin
 import keyboards, settings
 
-plugin = Plugin(name="Помощь")
+plugin = Plugin(name="начать")
 
 
-@plugin.on_text("помощь", "help", "начать", "start")
+@plugin.on_text("помощь", "help", "начать", "start", "привет", "hallo")
 async def help_me(message, attachments, env):
     user = await env.request("users.get", user_ids=[message.from_id], name_case="Nom")
     user = user.response[0]
