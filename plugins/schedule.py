@@ -102,42 +102,43 @@ def get_schedule(**kwargs):
     now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
     now.replace(hour=0, minute=0, second=0, microsecond=0)
     day = kwargs.get('day', now.weekday() + 1)
-    if now.month > 8:
-        year, next_year = now.year, now.year + 1
-    if now.month < 7:
-        year, next_year = now.year - 1, now.year
-    for m in range(9, 13):
-        c = calendar.monthcalendar(year, m)
-        flag = 0
-        for x in c:
-            if m > 9 and 0 not in x and c[0] == x:
-                w += 1
-            if m == 9:
-                if 1 in x and settings.first09:
-                    w += 1
-                elif 1 not in x:
-                    w += 1
-            if x != c[0] and m > 9:
-                w += 1
-            if now.day in x and m == now.month:
-                flag = 1
-                break
-        if flag:
-            break
-    if now.year == next_year:
-        for m in range(1, 7):
-            c = calendar.monthcalendar(next_year, m)
+    if w == 0:
+        if now.month > 8:
+            year, next_year = now.year, now.year + 1
+        if now.month < 7:
+            year, next_year = now.year - 1, now.year
+        for m in range(9, 13):
+            c = calendar.monthcalendar(year, m)
             flag = 0
             for x in c:
-                if 0 not in x and x == c[0]:
+                if m > 9 and 0 not in x and c[0] == x:
                     w += 1
-                if x != c[0]:
+                if m == 9:
+                    if 1 in x and settings.first09:
+                        w += 1
+                    elif 1 not in x:
+                        w += 1
+                if x != c[0] and m > 9:
                     w += 1
                 if now.day in x and m == now.month:
                     flag = 1
                     break
             if flag:
                 break
+        if now.year == next_year:
+            for m in range(1, 7):
+                c = calendar.monthcalendar(next_year, m)
+                flag = 0
+                for x in c:
+                    if 0 not in x and x == c[0]:
+                        w += 1
+                    if x != c[0]:
+                        w += 1
+                    if now.day in x and m == now.month:
+                        flag = 1
+                        break
+                if flag:
+                    break
     week = w
     week_day = day
     message = read_file(group=group, week=week, weekday=week_day, delta=delta)
