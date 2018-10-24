@@ -6,6 +6,8 @@ token = 'bf90dcf53ded8e2759b4b799970569c42eee11adad2d0b2f031596bd2e227f9d469df88
 admins = [100458394]
 
 groups_admins = {
+    "у-156": [100458394, 69449070],
+    "у-153": [327780936],
 }
 
 first09 = False
