@@ -90,69 +90,78 @@ schedule_menu = {
 
 keyboard_main = {
     "one_time": False,
-    "buttons": [[
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"1\"}",
-                "label": "Помощь"
+    "buttons": [
+        [
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"1\"}",
+                    "label": "Помощь"
+                },
+                "color": "default"
             },
-            "color": "default"
-        },
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"2\"}",
-                "label": "Расписание"
-            },
-            "color": "default"
-        }
-    ]]
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"2\"}",
+                    "label": "Расписание"
+                },
+                "color": "default"
+            }
+        ],
+        [
+
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"3\"}",
+                    "label": "Настройки"
+                },
+                "color": "default"
+            }
+        ]
+    ]
 }
 
 keyboard_main_admin = {
     "one_time": False,
-    "buttons": [[
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"1\"}",
-                "label": "Помощь"
-            },
-            "color": "default"
-        },
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"2\"}",
-                "label": "Расписание"
-            },
-            "color": "default"
-        },
-        {
-            "action": {
-                "type": "text",
-                "payload": "{\"button\": \"3\"}",
-                "label": "Админка"
-            },
-            "color": "default"
-        }
-    ]]
-}
-
-settings_menu = {
-    "one_time": False,
-    "buttons":
+    "buttons": [
         [
-            [
-                {
-                    "action": {
-                        "type": "text",
-                        "payload": "{\"button\": \"1\"}",
-                        "label": "Назад"
-                    },
-                    "color": "primary"
-                }
-            ]
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"1\"}",
+                    "label": "Помощь"
+                },
+                "color": "default"
+            },
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"2\"}",
+                    "label": "Расписание"
+                },
+                "color": "default"
+            }
+        ],
+        [
+
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"3\"}",
+                    "label": "Админка"
+                },
+                "color": "default"
+            },
+            {
+                "action": {
+                    "type": "text",
+                    "payload": "{\"button\": \"3\"}",
+                    "label": "Настройки"
+                },
+                "color": "default"
+            }
         ]
+    ]
 }

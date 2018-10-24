@@ -15,7 +15,12 @@ plugin = Plugin(name="Расписание")
 
 @plugin.on_text("Расписание")
 async def schedule_submenu(message, attachments, env):
-    await env.reply('Расписание (меню)', keyboard=json.dumps(keyboards.schedule_menu, ensure_ascii=False))
+    user_setting = settings.load_settings(message.from_id)
+    if user_setting:
+        await env.reply('Расписание (меню)', keyboard=json.dumps(keyboards.schedule_menu, ensure_ascii=False))
+    else:
+        text = 'Для начала установите группу через пункт меню настройки.'
+        await env.reply(text, keyboard=json.dumps(keyboards.keyboard_main, ensure_ascii=False))
 
 
 def get_subgroups_text(time, subject, room):
@@ -147,38 +152,40 @@ def get_schedule(**kwargs):
 
 @plugin.on_startswith_text("расписание на", "schedule for")
 async def schedule(message, attachments, env):
-    # TODO настройки языка, группы
-    now = datetime.now(tz=pytz.timezone('Europe/Moscow'))
-    week_day = now.weekday() + 1
-    week_days = {"ru": ["понедельник", "вторник", "среду", "четверг", "пятницу", "субботу", "воскресенье"],
-                 "en": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]}
-    days = {"en": {"today": {"day": week_day, "delta": 0},
-                   "tomorrow": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}},
-            "ru": {"сегодня": {"day": week_day, "delta": 0},
-                   "завтра": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}}}
-    for i in range(1, 8):
-        days["ru"][week_days["ru"][i - 1]] = i
-        days["en"][week_days["en"][i - 1]] = i
-    if env.body in days['ru'].keys():
-        day = days["ru"][env.body]
-    elif env.body in days['en'].keys():
-        day = days["en"][env.body]
+    # TODO настройки языка
+    user_setting = settings.load_settings(message.from_id)
+    if user_setting:
+        now = datetime.now(tz=pytz.timezone('Europe/Moscow'))
+        week_day = now.weekday() + 1
+        week_days = {"ru": ["понедельник", "вторник", "среду", "четверг", "пятницу", "субботу", "воскресенье"],
+                     "en": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]}
+        days = {"en": {"today": {"day": week_day, "delta": 0},
+                       "tomorrow": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}},
+                "ru": {"сегодня": {"day": week_day, "delta": 0},
+                       "завтра": {"day": week_day + 1 if week_day in range(6) else 1, "delta": 1}}}
+        for i in range(1, 8):
+            days["ru"][week_days["ru"][i - 1]] = i
+            days["en"][week_days["en"][i - 1]] = i
+        if env.body in days['ru'].keys():
+            day = days["ru"][env.body]
+        elif env.body in days['en'].keys():
+            day = days["en"][env.body]
+        else:
+            day = datetime.strptime(env.body, '%d.%m.%Y').weekday() + 1
+        tmp = ["today", "tomorrow", "сегодня", "завтра"]
+        if env.body in tmp:
+            res = get_schedule(delta=day["delta"], group=user_setting['group'])
+            text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
+        elif (env.body in days['ru'].keys() or env.body in days['en'].keys()) and env.body not in tmp:
+            res = get_schedule(day=day, group=user_setting['group'])
+            text = "{}({}):\n{}".format(message.text, res[0], res[1])
+            # next week
+            res = get_schedule(day=day, w=1, group=user_setting['group'])
+            text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
+        else:
+            date = datetime.strptime(env.body, '%d.%m.%Y')
+            res = get_schedule(date=date, group=user_setting['group'])
+            text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day - 1], res[0], res[1])
     else:
-        day = datetime.strptime(env.body, '%d.%m.%Y').weekday() + 1
-    if env.body in ["today", "tomorrow", "сегодня", "завтра"]:
-        res = get_schedule(delta=day["delta"])
-        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
-    elif (env.body in days['ru'].keys() or env.body in days['en'].keys()) and env.body not in ["today",
-                                                                                               "tomorrow",
-                                                                                               "сегодня",
-                                                                                               "завтра"]:
-        res = get_schedule(day=day)
-        text = "{}({}):\n{}".format(message.text, res[0], res[1])
-        # next week
-        res = get_schedule(day=day, w=1)
-        text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
-    else:
-        date = datetime.strptime(env.body, '%d.%m.%Y')
-        res = get_schedule(date=date)
-        text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day - 1], res[0], res[1])
+        text = 'Для начала установите группу через пункт меню настройки.'
     await env.reply(text)
