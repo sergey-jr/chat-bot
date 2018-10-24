@@ -16,6 +16,7 @@ async def setting_menu(message, attachments, env):
         file_name = "{}/settings/{}.json".format(os.getcwd(), message.from_id)
         file = open(file_name, encoding="UTF-8", mode="r")
         text = file.read()
+        file.close()
         text += "\nДля изменения настроек введите команду:\n" \
                 "Обновить настройку <имя настройки>: <значение>\n" \
                 "Доступные настройки: группа\n" \

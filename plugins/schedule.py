@@ -78,7 +78,7 @@ def read_file(**kwargs):
                             end = datetime.strptime(end, '%H.%M').replace(day=now.day, month=now.month, year=now.year)
                             start, end = timezone.localize(start), timezone.localize(end)
                             if start <= now <= end or start > now:
-                                t += get_subgroups_text(s[x][0]['time'], s[x][1]['subject'], s[x][0]['room'])
+                                t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
                         else:
                             t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
             if not week % 2:
