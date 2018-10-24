@@ -38,8 +38,9 @@ def read_file(**kwargs):
         week = kwargs.get('week', None)
         delta = kwargs.get('delta', None)
         week_day = kwargs.get('weekday', None)
+        date = kwargs.get('date', None)
         timezone = pytz.timezone('Europe/Moscow')
-        now = datetime.now(tz=timezone) + timedelta(days=delta)
+        now = datetime.now(tz=timezone) + timedelta(days=delta) if date is None else date
         cwd = "{}/{}".format(os.getcwd(), group)
         with open(os.path.join(cwd, "schedule.json"), mode='r', encoding='utf-8') as file:
             s = file.read()
@@ -146,7 +147,7 @@ def get_schedule(**kwargs):
                     break
     week = w
     week_day = day
-    message = read_file(group=group, week=week, weekday=week_day, delta=delta)
+    message = read_file(group=group, week=week, weekday=week_day, delta=delta, date=date)
     return message
 
 
