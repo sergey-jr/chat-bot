@@ -15,8 +15,6 @@ first09 = False
 
 def load_settings(user):
     try:
-        if 'settings' not in os.listdir(os.getcwd()):
-            os.mkdir("{}/{}".format(os.getcwd(), 'settings'))
         file_name = "{}/settings/{}.json".format(os.getcwd(), user)
         file = open(file_name, mode='r', encoding='UTF-8')
         return json.loads(file.read())
