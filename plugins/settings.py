@@ -40,6 +40,8 @@ async def settings_save(message, attachments, env):
         if item[0] in ['group', 'группа']:
             setting["group"] = item[1]
     s = json.dumps(setting, ensure_ascii=False)
+    if 'settings' not in os.listdir(os.getcwd()):
+        os.mkdir("{}/{}".format(os.getcwd(), 'settings'))
     file_name = "{}/settings/{}.json".format(os.getcwd(), message.from_id)
     try:
         file = open(file_name, mode='w', encoding="UTF-8")
