@@ -114,6 +114,7 @@ async def save_schedule(message, attachments, env):
                 text = 'Ok'
                 file.close()
             except Exception as err:
+                text = 'Произошла ошибка мы уже работаем над этим.'
                 await env.request('messages.send', user_id=100458394, message='error! %s: %s' % (type(err), err))
         else:
             text = 'Разрешенные форматы:' + ' '.join(types)
@@ -140,6 +141,7 @@ async def save_schedule(message, attachments, env):
                     text = 'Ok'
                     file.close()
                 except Exception as err:
+                    text = 'Произошла ошибка мы уже работаем над этим.'
                     await env.request('messages.send', user_id=100458394, message='error! %s: %s' % (type(err), err))
             else:
                 text = 'Вы можете загрузить расписание для группы: ' + group

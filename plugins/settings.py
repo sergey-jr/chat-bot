@@ -62,7 +62,7 @@ async def settings_save(message, attachments, env):
 @plugin.on_startswith_text("Update setting", "Обновить настройку")
 async def update_setting(message, attachments, env):
     try:
-        file_name = "{}\settings\\{}.json".format(os.getcwd(), message.from_id)
+        file_name = "{}/settings/{}.json".format(os.getcwd(), message.from_id)
         file = open(file_name, encoding="UTF-8", mode="r")
         now_setting = file.read()
         now_settings = json.loads(now_setting)
@@ -93,7 +93,7 @@ async def update_setting(message, attachments, env):
 @plugin.on_startswith_text("Update settings", "Обновить настройки")
 async def update_settings(message, attachments, env):
     try:
-        file_name = "{}\settings\\{}.json".format(os.getcwd(), message.from_id)
+        file_name = "{}/settings/{}.json".format(os.getcwd(), message.from_id)
         file = open(file_name, encoding="UTF-8", mode="r")
         now_setting = file.read()
         now_settings = json.loads(now_setting)
