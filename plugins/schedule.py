@@ -39,7 +39,11 @@ def read_file(**kwargs):
         week_day = kwargs.get('weekday', None)
         date = kwargs.get('date', None)
         timezone = pytz.timezone('Europe/Moscow')
-        now = datetime.now(tz=timezone) + timedelta(days=delta) if date is None else date
+        if delta is not None:
+            now = datetime.now(tz=timezone) + timedelta(days=delta)
+        else:
+            now = datetime.now(tz=timezone)
+        now = now if not date else date
         cwd = "{}/{}".format(os.getcwd(), group)
         with open(os.path.join(cwd, "schedule.json"), mode='r', encoding='utf-8') as file:
             s = file.read()
@@ -101,10 +105,14 @@ def read_file(**kwargs):
 def get_schedule(**kwargs):
     group = kwargs.get('group', 'у-156')
     w = kwargs.get('w', 0)
-    delta = kwargs.get('delta', 1 if kwargs.get('day', None) else None)
+    delta = kwargs.get('delta', None)
     date = kwargs.get('date', None)
     timezone = pytz.timezone('Europe/Moscow')
-    now = datetime.now(tz=timezone) + timedelta(days=delta) if not date else date
+    if delta is not None:
+        now = datetime.now(tz=timezone) + timedelta(days=delta)
+    else:
+        now = datetime.now(tz=timezone)
+    now = now if not date else date
     day = kwargs.get('day', now.weekday() + 1)
     if w == 0:
         if now.month > 8:
@@ -157,10 +165,10 @@ async def schedule(message, attachments, env):
             res = get_schedule(delta=day["delta"], group=user_setting['group'])
             text = "{}({}/{}):\n{}".format(message.text, week_days['ru'][day["day"] - 1], res[0], res[1])
         elif (env.body in days['ru'].keys() or env.body in days['en'].keys()) and env.body not in tmp:
-            res = get_schedule(day=day, group=user_setting['group'])
+            res = get_schedule(day=day, w=1, group=user_setting['group'])
             text = "{}({}):\n{}".format(message.text, res[0], res[1])
             # next week
-            res = get_schedule(day=day, w=1, group=user_setting['group'])
+            res = get_schedule(day=day, w=2, group=user_setting['group'])
             text += "\n{}({}):\n{}".format(message.text, res[0], res[1])
         else:
             date = datetime.strptime(env.body, '%d.%m.%Y')
