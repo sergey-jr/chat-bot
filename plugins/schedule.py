@@ -62,7 +62,7 @@ def read_file(**kwargs):
                     else:
                         t += get_subgroups_text(s[x]['time'], s[x]['subject'], s[x]['room'])
                 elif isinstance(s[x], list) or isinstance(s[x], tuple):
-                    if week % 2 and s[x][0]:
+                    if week % 2 == 0 and s[x][0]:
                         if delta == 0:
                             start, end = s[x][0]['time'].split('-')
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
@@ -73,7 +73,7 @@ def read_file(**kwargs):
                                 t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
                         else:
                             t += get_subgroups_text(s[x][0]['time'], s[x][0]['subject'], s[x][0]['room'])
-                    if s[x][1] and not week % 2:
+                    if s[x][1] and week % 2:
                         if delta == 0:
                             start, end = s[x][1]['time'].split('-')
                             start = datetime.strptime(start, '%H.%M').replace(day=now.day, month=now.month,
@@ -84,7 +84,7 @@ def read_file(**kwargs):
                                 t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
                         else:
                             t += get_subgroups_text(s[x][1]['time'], s[x][1]['subject'], s[x][1]['room'])
-            if not week % 2:
+            if week % 2:
                 week = 'знаменатель'
             else:
                 week = 'числитель'
@@ -128,10 +128,8 @@ def get_schedule(**kwargs):
             start_year = now.replace(day=1, month=1)
             if end_year.isocalendar()[1] == start_year.isocalendar()[1]:
                 end_year = end_year - timedelta(days=end_year.weekday() + 1)
-            w = end_year.isocalendar()[1] - start.isocalendar()[1]
-            w += now.isocalendar()[1] - start_year.isocalendar()[1] if now != start_year else 1
-        if settings.first09:
-            w -= 1
+            w = end_year.isocalendar()[1] - start.isocalendar()[1] + 1
+            w += now.isocalendar()[1] - start_year.isocalendar()[1] + 1 if now != start_year else 1
     week = w
     week_day = day
     message = read_file(group=group, week=week, weekday=week_day, delta=delta, date=date)

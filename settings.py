@@ -6,11 +6,9 @@ token = os.environ['TOKEN']
 admins = [100458394]
 
 groups_admins = {
-    "у-156": [100458394, 69449070],
+    "у-156": [100458394],
     "у-153": [327780936],
 }
-
-first09 = False
 
 
 def load_settings(user):
