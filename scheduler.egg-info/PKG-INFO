@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: scheduler
+Version: 1
+Summary: Scheduler bot for VSUET
+Home-page: https://github.com/sergey-jr/chat-bot
+Author: Sergey Bakaleynik
+Author-email: bilaserg@gmail.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.5
